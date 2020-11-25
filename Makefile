@@ -1,2 +1,6 @@
 lint:
 	golangci-lint -v run ./...
+
+
+generate:
+	go generate -v ./...
