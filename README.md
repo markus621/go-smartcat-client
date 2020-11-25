@@ -29,7 +29,16 @@ func main() {
 	client := cli.NewClient(conf)
 	client.Debug(true, os.Stdout)
 
-	acc, err := client.Account()
-	mte, err := client.AccountMTEngines()
+	_, _ = client.GetAccount()
+    _, _ = client.GetAccountMTEngines()
+    _, _ = client.SetCallback(cli.Callback{
+        URL: "https://demo.example/callback",
+        AdditionalHeaders: []cli.AdditionalHeader{
+            {Name: "x-header", Value: "demo"},
+        },
+    })
+    _, _ = client.GetCallback()
+    _ = client.DelCallback()
+    _, _ = client.GetCallbackLastErrors(10)
 }
 ```
