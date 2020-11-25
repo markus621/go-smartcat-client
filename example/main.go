@@ -1,12 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	cli "github.com/markus621/go-smartcat-client"
 )
 
+//nolint: errcheck
 func main() {
 
 	conf := cli.Config{
@@ -18,17 +18,15 @@ func main() {
 	client := cli.NewClient(conf)
 	client.Debug(true, os.Stdout)
 
-	acc, err := client.Account()
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("==> ", acc)
-
-	mte, err := client.AccountMTEngines()
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println("==> ", mte)
-
+	_, _ = client.GetAccount()
+	_, _ = client.GetAccountMTEngines()
+	_, _ = client.SetCallback(cli.Callback{
+		URL: "https://demo.example/callback",
+		AdditionalHeaders: []cli.AdditionalHeader{
+			{Name: "x-header", Value: "demo"},
+		},
+	})
+	_, _ = client.GetCallback()
+	_ = client.DelCallback()
+	_, _ = client.GetCallbackLastErrors(10)
 }

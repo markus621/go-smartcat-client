@@ -26,14 +26,14 @@ type (
 	AccountMTEngines []AccountMTEngine
 )
 
-//Account Receiving the account details
-func (v *Client) Account() (o Account, err error) {
-	err, _ = v.call(http.MethodGet, uriAccount, nil, &o)
+//GetAccount Receiving the account details
+func (v *Client) GetAccount() (out Account, err error) {
+	err, _ = v.call(http.MethodGet, uriAccount, nil, &out)
 	return
 }
 
-//AccountMtengines Receiving MT engines available for the account
-func (v *Client) AccountMTEngines() (o AccountMTEngines, err error) {
-	err, _ = v.call(http.MethodGet, uriAccountMTEngines, nil, &o)
+//GetAccountMTEngines Receiving MT engines available for the account
+func (v *Client) GetAccountMTEngines() (out AccountMTEngines, err error) {
+	err, _ = v.call(http.MethodGet, uriAccountMTEngines, nil, &out)
 	return
 }

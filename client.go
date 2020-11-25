@@ -63,7 +63,7 @@ func (v *Client) call(method, path string, req json.Marshaler, resp json.Unmarsh
 	)
 
 	switch method {
-	case http.MethodGet, http.MethodHead, http.MethodConnect, http.MethodOptions:
+	case http.MethodGet, http.MethodHead, http.MethodConnect, http.MethodOptions, http.MethodDelete:
 		body = nil
 	default:
 		body, err = req.MarshalJSON()
@@ -89,36 +89,33 @@ func (v *Client) call(method, path string, req json.Marshaler, resp json.Unmarsh
 	}
 
 	code := cresp.StatusCode
-	if code == 200 {
+	switch code {
+	case 200:
 		body, err = v.readBody(cresp.Body, resp)
-		v.writeDebug(code, path, body, err)
-		switch err {
-		case nil:
-			return nil, code
-		case io.EOF:
-			return errors.New(cresp.Status), code
-		default:
-			return errors.Wrap(err, "unmarshal response"), code
-		}
-	}
-	if code >= 400 && code < 500 {
+	case 204:
+	case 404:
+		body, err = nil, errors.New(cresp.Status)
+	case 401, 403:
 		msg := ErrorResponse{}
 		body, err = v.readBody(cresp.Body, &msg)
-		v.writeDebug(code, path, body, err)
-		switch err {
-		case nil:
-			return msg, code
-		case io.EOF:
-			return errors.New(cresp.Status), code
-		default:
-			return errors.Wrap(err, "unmarshal error response"), code
+	default:
+		var raw json.RawMessage
+		body, err = v.readBody(cresp.Body, &raw)
+		if err == nil {
+			err = ErrUnknown
 		}
 	}
 
-	var raw json.RawMessage
-	body, err = v.readBody(cresp.Body, &raw)
-	v.writeDebug(code, path, body, err)
-	return ErrUnknown, code
+	v.writeDebug(code, method, path, body, err)
+
+	switch err {
+	case nil:
+		return nil, code
+	case io.EOF:
+		return errors.New(cresp.Status), code
+	default:
+		return errors.Wrap(err, "unmarshal response"), code
+	}
 }
 
 func (v *Client) readBody(rc io.ReadCloser, resp json.Unmarshaler) (b []byte, err error) {
@@ -130,8 +127,8 @@ func (v *Client) readBody(rc io.ReadCloser, resp json.Unmarshaler) (b []byte, er
 	return
 }
 
-func (v *Client) writeDebug(code int, url string, body []byte, err error) {
+func (v *Client) writeDebug(code int, method, path string, body []byte, err error) {
 	if v.debug {
-		fmt.Fprintf(v.writer, "[%d] %s err: %+v raw:%s \n", code, url, err, body)
+		fmt.Fprintf(v.writer, "[%d] %s:%s err: %+v raw:%s \n", code, method, path, err, body)
 	}
 }
