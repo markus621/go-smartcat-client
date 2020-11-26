@@ -18,6 +18,7 @@ const (
 )
 
 type (
+	//Client client connecting to the server
 	Client struct {
 		conf Config
 		cli  *http.Client
@@ -44,7 +45,7 @@ func NewClient(c Config) *Client {
 	return NewCustomClient(c, cli)
 }
 
-//NewClient init client
+//NewCustomClient init client
 func NewCustomClient(c Config, cli *http.Client) *Client {
 	return &Client{
 		conf: c,
@@ -52,11 +53,12 @@ func NewCustomClient(c Config, cli *http.Client) *Client {
 	}
 }
 
+//Debug enable logging of responses
 func (v *Client) Debug(is bool, w io.Writer) {
 	v.debug, v.writer = is, w
 }
 
-func (v *Client) call(method, path string, req json.Marshaler, resp json.Unmarshaler) (error, int) {
+func (v *Client) call(method, path string, req json.Marshaler, resp json.Unmarshaler) (int, error) {
 	var (
 		body []byte
 		err  error
@@ -68,13 +70,13 @@ func (v *Client) call(method, path string, req json.Marshaler, resp json.Unmarsh
 	default:
 		body, err = req.MarshalJSON()
 		if err != nil {
-			return errors.Wrap(err, "marshal request"), 0
+			return 0, errors.Wrap(err, "marshal request")
 		}
 	}
 
 	creq, err := http.NewRequest(method, v.conf.URL+path, bytes.NewReader(body))
 	if err != nil {
-		return errors.Wrap(err, "create request"), 0
+		return 0, errors.Wrap(err, "create request")
 	}
 
 	creq.Header.Set("User-Agent", userAgent)
@@ -85,7 +87,7 @@ func (v *Client) call(method, path string, req json.Marshaler, resp json.Unmarsh
 
 	cresp, err := v.cli.Do(creq)
 	if err != nil {
-		return errors.Wrap(err, "make request"), 0
+		return 0, errors.Wrap(err, "make request")
 	}
 
 	code := cresp.StatusCode
@@ -110,11 +112,11 @@ func (v *Client) call(method, path string, req json.Marshaler, resp json.Unmarsh
 
 	switch err {
 	case nil:
-		return nil, code
+		return code, nil
 	case io.EOF:
-		return errors.New(cresp.Status), code
+		return code, errors.New(cresp.Status)
 	default:
-		return errors.Wrap(err, "unmarshal response"), code
+		return code, errors.Wrap(err, "unmarshal response")
 	}
 }
 

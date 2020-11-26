@@ -13,27 +13,30 @@ const (
 
 //easyjson:json
 type (
+	//Account information about your current account.
 	Account struct {
 		ID         string `json:"id"`
 		Name       string `json:"name"`
 		IsPersonal bool   `json:"isPersonal"`
 		Type       string `json:"type"`
 	}
+	//AccountMTEngine information about the machine translation engine
 	AccountMTEngine struct {
 		ID   string `json:"id"`
 		Name string `json:"name"`
 	}
+	//AccountMTEngines list of available machine translation engines
 	AccountMTEngines []AccountMTEngine
 )
 
 //GetAccount Receiving the account details
 func (v *Client) GetAccount() (out Account, err error) {
-	err, _ = v.call(http.MethodGet, uriAccount, nil, &out)
+	_, err = v.call(http.MethodGet, uriAccount, nil, &out)
 	return
 }
 
 //GetAccountMTEngines Receiving MT engines available for the account
 func (v *Client) GetAccountMTEngines() (out AccountMTEngines, err error) {
-	err, _ = v.call(http.MethodGet, uriAccountMTEngines, nil, &out)
+	_, err = v.call(http.MethodGet, uriAccountMTEngines, nil, &out)
 	return
 }
