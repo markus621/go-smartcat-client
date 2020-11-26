@@ -64,10 +64,7 @@ func (v *Client) call(method, path string, req json.Marshaler, resp json.Unmarsh
 		err  error
 	)
 
-	switch method {
-	case http.MethodGet, http.MethodHead, http.MethodConnect, http.MethodOptions, http.MethodDelete:
-		body = nil
-	default:
+	if req != nil {
 		body, err = req.MarshalJSON()
 		if err != nil {
 			return 0, errors.Wrap(err, "marshal request")
@@ -97,9 +94,12 @@ func (v *Client) call(method, path string, req json.Marshaler, resp json.Unmarsh
 	case 204:
 	case 404:
 		body, err = nil, errors.New(cresp.Status)
-	case 401, 403:
+	case 400, 401, 403:
 		msg := ErrorResponse{}
 		body, err = v.readBody(cresp.Body, &msg)
+		if err != nil {
+			err = ErrorResponse{Message: string(body)}
+		}
 	default:
 		var raw json.RawMessage
 		body, err = v.readBody(cresp.Body, &raw)
@@ -122,7 +122,7 @@ func (v *Client) call(method, path string, req json.Marshaler, resp json.Unmarsh
 
 func (v *Client) readBody(rc io.ReadCloser, resp json.Unmarshaler) (b []byte, err error) {
 	b, err = ioutil.ReadAll(rc)
-	if err != nil {
+	if err != nil || resp == nil {
 		return
 	}
 	err = resp.UnmarshalJSON(b)

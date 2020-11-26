@@ -20,6 +20,7 @@ func main() {
 
 	_, _ = client.GetAccount()
 	_, _ = client.GetAccountMTEngines()
+
 	_, _ = client.SetCallback(cli.Callback{
 		URL: "https://demo.example/callback",
 		AdditionalHeaders: []cli.AdditionalHeader{
@@ -29,4 +30,9 @@ func main() {
 	_, _ = client.GetCallback()
 	_ = client.DelCallback()
 	_, _ = client.GetCallbackLastErrors(10)
+
+	_, _ = client.ListProject()
+	_, _ = client.GetProject("0")
+	_, _ = client.SetProject("0", cli.PatchProject{})
+	_ = client.DelProject("0")
 }
