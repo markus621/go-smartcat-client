@@ -11,12 +11,14 @@ const (
 	EAHostURL = `https://ea.smartcat.ai`
 )
 
+//Config client settings for connecting to the server
 type Config struct {
 	AccountID string
 	AuthKey   string
 	URL       string
 }
 
+//AuthToken generating an authorization token
 func (c Config) AuthToken() string {
 	return `Basic ` + base64.StdEncoding.EncodeToString([]byte(c.AccountID+`:`+c.AuthKey))
 }
