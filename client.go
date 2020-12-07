@@ -94,7 +94,7 @@ func (v *Client) call(method, path string, req json.Marshaler, resp json.Unmarsh
 	case 204:
 	case 404:
 		body, err = nil, errors.New(cresp.Status)
-	case 400, 401, 403:
+	case 400, 401, 403, 202:
 		msg := ErrorResponse{}
 		body, err = v.readBody(cresp.Body, &msg)
 		if err != nil {
