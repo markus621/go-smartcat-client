@@ -38,25 +38,25 @@ type (
 )
 
 //DelCallback Resetting the configuration of notifications reception
-func (v *Client) DelCallback() (err error) {
-	_, err = v.call(http.MethodDelete, uriCallback, nil, nil)
+func (c *Client) DelCallback() (err error) {
+	_, err = c.json(http.MethodDelete, uriCallback, nil, nil)
 	return
 }
 
 //GetCallback Reading configurations of notifications reception of the account
-func (v *Client) GetCallback() (out Callback, err error) {
-	_, err = v.call(http.MethodGet, uriCallback, nil, &out)
+func (c *Client) GetCallback() (out Callback, err error) {
+	_, err = c.json(http.MethodGet, uriCallback, nil, &out)
 	return
 }
 
 //SetCallback Setting configurations of notifications reception of the account
-func (v *Client) SetCallback(in Callback) (out Callback, err error) {
-	_, err = v.call(http.MethodPost, uriCallback, &in, &out)
+func (c *Client) SetCallback(in Callback) (out Callback, err error) {
+	_, err = c.json(http.MethodPost, uriCallback, &in, &out)
 	return
 }
 
 //GetCallbackLastErrors Reading the recent sending errors
-func (v *Client) GetCallbackLastErrors(limit int) (out LastErrors, err error) {
-	_, err = v.call(http.MethodGet, fmt.Sprintf("%s?limit=%d", uriCallbackLastErrors, limit), nil, &out)
+func (c *Client) GetCallbackLastErrors(limit int) (out LastErrors, err error) {
+	_, err = c.json(http.MethodGet, fmt.Sprintf("%s?limit=%d", uriCallbackLastErrors, limit), nil, &out)
 	return
 }

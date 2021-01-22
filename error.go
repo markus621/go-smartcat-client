@@ -7,6 +7,8 @@ import "github.com/pkg/errors"
 var (
 	//ErrUnknown unknown error
 	ErrUnknown = errors.New("unknown error")
+	//ErrEmptyRequest empty request error
+	ErrEmptyRequest = errors.New("request is empty")
 )
 
 //ErrorResponse model error response from the server
