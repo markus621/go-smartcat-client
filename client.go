@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	userAgent = "go-smartcat-client"
+	userAgent = `go-smartcat-client`
 )
 
 type (
@@ -54,83 +54,108 @@ func NewCustomClient(c Config, cli *http.Client) *Client {
 }
 
 //Debug enable logging of responses
-func (v *Client) Debug(is bool, w io.Writer) {
-	v.debug, v.writer = is, w
+func (c *Client) Debug(is bool, w io.Writer) {
+	c.debug, c.writer = is, w
 }
 
-func (v *Client) call(method, path string, req json.Marshaler, resp json.Unmarshaler) (int, error) {
-	var (
-		body []byte
-		err  error
-	)
+func (c *Client) raw(method, path string, req []byte) (code int, body []byte, err error) {
+	code, body, err = c.call(method, path, body, `application/json`)
+	return
+}
 
+func (c *Client) json(method, path string, req json.Marshaler, resp json.Unmarshaler) (code int, err error) {
+	var body []byte
 	if req != nil {
 		body, err = req.MarshalJSON()
 		if err != nil {
 			return 0, errors.Wrap(err, "marshal request")
 		}
 	}
-
-	creq, err := http.NewRequest(method, v.conf.URL+path, bytes.NewReader(body))
+	code, body, err = c.call(method, path, body, `application/json`)
 	if err != nil {
-		return 0, errors.Wrap(err, "create request")
+		return
+	}
+	err = json.Unmarshal(body, &resp)
+	return
+}
+
+func (c *Client) form(method, path string, fields *Form, resp json.Unmarshaler) (code int, err error) {
+	if fields == nil {
+		err = ErrEmptyRequest
+		return
+	}
+	var body []byte
+	code, body, err = c.call(method, path, fields.Bytes(), fields.GetContentType())
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(body, &resp)
+	return
+}
+
+func (c *Client) call(method, path string, body []byte, contentType string) (int, []byte, error) {
+	creq, err := http.NewRequest(method, c.conf.URL+path, bytes.NewReader(body))
+	c.requestDebug(method, path, body, err)
+	if err != nil {
+		return 0, nil, errors.Wrap(err, "create request")
 	}
 
 	creq.Header.Set("User-Agent", userAgent)
 	creq.Header.Set("Connection", "keep-alive")
 	creq.Header.Set("Accept", "*/*")
-	creq.Header.Set("Content-Type", "application/json")
-	creq.Header.Set("Authorization", v.conf.AuthToken())
+	creq.Header.Set("Content-Type", contentType)
+	creq.Header.Set("Authorization", c.conf.AuthToken())
 
-	cresp, err := v.cli.Do(creq)
+	cresp, err := c.cli.Do(creq)
 	if err != nil {
-		return 0, errors.Wrap(err, "make request")
+		return 0, nil, errors.Wrap(err, "make request")
 	}
 
 	code := cresp.StatusCode
 	switch code {
 	case 200:
-		body, err = v.readBody(cresp.Body, resp)
+		body, err = c.read(cresp.Body)
 	case 204:
-	case 404:
+	case 404, 415:
 		body, err = nil, errors.New(cresp.Status)
-	case 400, 401, 403, 202:
-		msg := ErrorResponse{}
-		body, err = v.readBody(cresp.Body, &msg)
-		if err != nil {
-			err = ErrorResponse{Message: string(body)}
-		}
 	default:
-		var raw json.RawMessage
-		body, err = v.readBody(cresp.Body, &raw)
+		msg := ErrorResponse{}
+		body, err = c.read(cresp.Body)
 		if err == nil {
-			err = ErrUnknown
+			if err = json.Unmarshal(body, &msg); err != nil {
+				err = ErrorResponse{Message: string(body)}
+			} else {
+				err = msg
+			}
 		}
 	}
 
-	v.writeDebug(code, method, path, body, err)
+	c.responseDebug(code, err, body)
 
 	switch err {
 	case nil:
-		return code, nil
+		return code, body, nil
 	case io.EOF:
-		return code, errors.New(cresp.Status)
+		return code, body, errors.New(cresp.Status)
 	default:
-		return code, errors.Wrap(err, "unmarshal response")
+		return code, body, err
 	}
 }
 
-func (v *Client) readBody(rc io.ReadCloser, resp json.Unmarshaler) (b []byte, err error) {
+func (c *Client) read(rc io.ReadCloser) (b []byte, err error) {
+	defer rc.Close() //nolint: errcheck
 	b, err = ioutil.ReadAll(rc)
-	if err != nil || resp == nil {
-		return
-	}
-	err = resp.UnmarshalJSON(b)
 	return
 }
 
-func (v *Client) writeDebug(code int, method, path string, body []byte, err error) {
-	if v.debug {
-		fmt.Fprintf(v.writer, "[%d] %s:%s err: %+v raw:%s \n", code, method, path, err, body)
+func (c *Client) requestDebug(method, path string, body []byte, err error) {
+	if c.debug {
+		fmt.Fprintf(c.writer, "REQ: %s:%s err: %v raw:%s \n", method, path, err, body)
+	}
+}
+
+func (c *Client) responseDebug(code int, err error, body []byte) {
+	if c.debug {
+		fmt.Fprintf(c.writer, "RES: [%d] err: %v raw:%s \n", code, err, body)
 	}
 }

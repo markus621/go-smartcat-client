@@ -30,13 +30,13 @@ type (
 )
 
 //GetAccount Receiving the account details
-func (v *Client) GetAccount() (out Account, err error) {
-	_, err = v.call(http.MethodGet, uriAccount, nil, &out)
+func (c *Client) GetAccount() (out Account, err error) {
+	_, err = c.json(http.MethodGet, uriAccount, nil, &out)
 	return
 }
 
 //GetAccountMTEngines Receiving MT engines available for the account
-func (v *Client) GetAccountMTEngines() (out AccountMTEngines, err error) {
-	_, err = v.call(http.MethodGet, uriAccountMTEngines, nil, &out)
+func (c *Client) GetAccountMTEngines() (out AccountMTEngines, err error) {
+	_, err = c.json(http.MethodGet, uriAccountMTEngines, nil, &out)
 	return
 }

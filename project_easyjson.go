@@ -37,7 +37,7 @@ func easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient(in *jlexer.Lexer, 
 		}
 		switch key {
 		case "progress":
-			out.Progress = uint(in.Uint())
+			out.Progress = float64(in.Float64())
 		case "stageType":
 			out.StageType = string(in.String())
 		default:
@@ -57,7 +57,7 @@ func easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient(out *jwriter.Write
 	{
 		const prefix string = ",\"progress\":"
 		out.RawString(prefix[1:])
-		out.Uint(uint(in.Progress))
+		out.Float64(float64(in.Progress))
 	}
 	{
 		const prefix string = ",\"stageType\":"
@@ -1479,7 +1479,207 @@ func (v *PatchProject) UnmarshalJSON(data []byte) error {
 func (v *PatchProject) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient9(l, v)
 }
-func easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient10(in *jlexer.Lexer, out *Executive) {
+func easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient10(in *jlexer.Lexer, out *NewProject) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "name":
+			out.Name = string(in.String())
+		case "description":
+			out.Description = string(in.String())
+		case "sourceLanguage":
+			out.SourceLanguage = string(in.String())
+		case "targetLanguages":
+			if in.IsNull() {
+				in.Skip()
+				out.TargetLanguages = nil
+			} else {
+				in.Delim('[')
+				if out.TargetLanguages == nil {
+					if !in.IsDelim(']') {
+						out.TargetLanguages = make([]string, 0, 4)
+					} else {
+						out.TargetLanguages = []string{}
+					}
+				} else {
+					out.TargetLanguages = (out.TargetLanguages)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v49 string
+					v49 = string(in.String())
+					out.TargetLanguages = append(out.TargetLanguages, v49)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
+		case "assignToVendor":
+			out.AssignToVendor = bool(in.Bool())
+		case "useMT":
+			out.UseMT = bool(in.Bool())
+		case "pretranslate":
+			out.Pretranslate = bool(in.Bool())
+		case "useTranslationMemory":
+			out.UseTranslationMemory = bool(in.Bool())
+		case "autoPropagateRepetitions":
+			out.AutoPropagateRepetitions = bool(in.Bool())
+		case "workflowStages":
+			if in.IsNull() {
+				in.Skip()
+				out.WorkflowStages = nil
+			} else {
+				in.Delim('[')
+				if out.WorkflowStages == nil {
+					if !in.IsDelim(']') {
+						out.WorkflowStages = make([]string, 0, 4)
+					} else {
+						out.WorkflowStages = []string{}
+					}
+				} else {
+					out.WorkflowStages = (out.WorkflowStages)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v50 string
+					v50 = string(in.String())
+					out.WorkflowStages = append(out.WorkflowStages, v50)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
+		case "isForTesting":
+			out.IsForTesting = bool(in.Bool())
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient10(out *jwriter.Writer, in NewProject) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"name\":"
+		out.RawString(prefix[1:])
+		out.String(string(in.Name))
+	}
+	{
+		const prefix string = ",\"description\":"
+		out.RawString(prefix)
+		out.String(string(in.Description))
+	}
+	{
+		const prefix string = ",\"sourceLanguage\":"
+		out.RawString(prefix)
+		out.String(string(in.SourceLanguage))
+	}
+	{
+		const prefix string = ",\"targetLanguages\":"
+		out.RawString(prefix)
+		if in.TargetLanguages == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+			out.RawString("null")
+		} else {
+			out.RawByte('[')
+			for v51, v52 := range in.TargetLanguages {
+				if v51 > 0 {
+					out.RawByte(',')
+				}
+				out.String(string(v52))
+			}
+			out.RawByte(']')
+		}
+	}
+	{
+		const prefix string = ",\"assignToVendor\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.AssignToVendor))
+	}
+	{
+		const prefix string = ",\"useMT\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.UseMT))
+	}
+	{
+		const prefix string = ",\"pretranslate\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.Pretranslate))
+	}
+	{
+		const prefix string = ",\"useTranslationMemory\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.UseTranslationMemory))
+	}
+	{
+		const prefix string = ",\"autoPropagateRepetitions\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.AutoPropagateRepetitions))
+	}
+	{
+		const prefix string = ",\"workflowStages\":"
+		out.RawString(prefix)
+		if in.WorkflowStages == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+			out.RawString("null")
+		} else {
+			out.RawByte('[')
+			for v53, v54 := range in.WorkflowStages {
+				if v53 > 0 {
+					out.RawByte(',')
+				}
+				out.String(string(v54))
+			}
+			out.RawByte(']')
+		}
+	}
+	{
+		const prefix string = ",\"isForTesting\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.IsForTesting))
+	}
+	out.RawByte('}')
+}
+
+// MarshalJSON supports json.Marshaler interface
+func (v NewProject) MarshalJSON() ([]byte, error) {
+	w := jwriter.Writer{}
+	easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient10(&w, v)
+	return w.Buffer.BuildBytes(), w.Error
+}
+
+// MarshalEasyJSON supports easyjson.Marshaler interface
+func (v NewProject) MarshalEasyJSON(w *jwriter.Writer) {
+	easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient10(w, v)
+}
+
+// UnmarshalJSON supports json.Unmarshaler interface
+func (v *NewProject) UnmarshalJSON(data []byte) error {
+	r := jlexer.Lexer{Data: data}
+	easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient10(&r, v)
+	return r.Error()
+}
+
+// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
+func (v *NewProject) UnmarshalEasyJSON(l *jlexer.Lexer) {
+	easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient10(l, v)
+}
+func easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient11(in *jlexer.Lexer, out *Executive) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -1516,7 +1716,7 @@ func easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient10(in *jlexer.Lexer
 		in.Consumed()
 	}
 }
-func easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient10(out *jwriter.Writer, in Executive) {
+func easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient11(out *jwriter.Writer, in Executive) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -1546,355 +1746,27 @@ func easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient10(out *jwriter.Wri
 // MarshalJSON supports json.Marshaler interface
 func (v Executive) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient10(&w, v)
-	return w.Buffer.BuildBytes(), w.Error
-}
-
-// MarshalEasyJSON supports easyjson.Marshaler interface
-func (v Executive) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient10(w, v)
-}
-
-// UnmarshalJSON supports json.Unmarshaler interface
-func (v *Executive) UnmarshalJSON(data []byte) error {
-	r := jlexer.Lexer{Data: data}
-	easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient10(&r, v)
-	return r.Error()
-}
-
-// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *Executive) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient10(l, v)
-}
-func easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient11(in *jlexer.Lexer, out *DocumentWorkflowStage) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "progress":
-			out.Progress = uint(in.Uint())
-		case "wordsTranslated":
-			out.WordsTranslated = uint64(in.Uint64())
-		case "unassignedWordsCount":
-			out.UnassignedWordsCount = uint64(in.Uint64())
-		case "status":
-			out.Status = string(in.String())
-		case "executives":
-			if in.IsNull() {
-				in.Skip()
-				out.Executives = nil
-			} else {
-				in.Delim('[')
-				if out.Executives == nil {
-					if !in.IsDelim(']') {
-						out.Executives = make([]Executive, 0, 1)
-					} else {
-						out.Executives = []Executive{}
-					}
-				} else {
-					out.Executives = (out.Executives)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v49 Executive
-					(v49).UnmarshalEasyJSON(in)
-					out.Executives = append(out.Executives, v49)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		default:
-			in.SkipRecursive()
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient11(out *jwriter.Writer, in DocumentWorkflowStage) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	{
-		const prefix string = ",\"progress\":"
-		out.RawString(prefix[1:])
-		out.Uint(uint(in.Progress))
-	}
-	{
-		const prefix string = ",\"wordsTranslated\":"
-		out.RawString(prefix)
-		out.Uint64(uint64(in.WordsTranslated))
-	}
-	{
-		const prefix string = ",\"unassignedWordsCount\":"
-		out.RawString(prefix)
-		out.Uint64(uint64(in.UnassignedWordsCount))
-	}
-	{
-		const prefix string = ",\"status\":"
-		out.RawString(prefix)
-		out.String(string(in.Status))
-	}
-	{
-		const prefix string = ",\"executives\":"
-		out.RawString(prefix)
-		if in.Executives == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-			out.RawString("null")
-		} else {
-			out.RawByte('[')
-			for v50, v51 := range in.Executives {
-				if v50 > 0 {
-					out.RawByte(',')
-				}
-				(v51).MarshalEasyJSON(out)
-			}
-			out.RawByte(']')
-		}
-	}
-	out.RawByte('}')
-}
-
-// MarshalJSON supports json.Marshaler interface
-func (v DocumentWorkflowStage) MarshalJSON() ([]byte, error) {
-	w := jwriter.Writer{}
 	easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient11(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
-func (v DocumentWorkflowStage) MarshalEasyJSON(w *jwriter.Writer) {
+func (v Executive) MarshalEasyJSON(w *jwriter.Writer) {
 	easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient11(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
-func (v *DocumentWorkflowStage) UnmarshalJSON(data []byte) error {
+func (v *Executive) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
 	easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient11(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *DocumentWorkflowStage) UnmarshalEasyJSON(l *jlexer.Lexer) {
+func (v *Executive) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient11(l, v)
 }
-func easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient12(in *jlexer.Lexer, out *Document) {
-	isTopLevel := in.IsStart()
-	if in.IsNull() {
-		if isTopLevel {
-			in.Consumed()
-		}
-		in.Skip()
-		return
-	}
-	in.Delim('{')
-	for !in.IsDelim('}') {
-		key := in.UnsafeFieldName(false)
-		in.WantColon()
-		if in.IsNull() {
-			in.Skip()
-			in.WantComma()
-			continue
-		}
-		switch key {
-		case "id":
-			out.ID = string(in.String())
-		case "name":
-			out.Name = string(in.String())
-		case "creationDate":
-			if data := in.Raw(); in.Ok() {
-				in.AddError((out.CreationDate).UnmarshalJSON(data))
-			}
-		case "deadline":
-			if data := in.Raw(); in.Ok() {
-				in.AddError((out.Deadline).UnmarshalJSON(data))
-			}
-		case "sourceLanguage":
-			out.SourceLanguage = string(in.String())
-		case "documentDisassemblingStatus":
-			out.DisassemblingStatus = string(in.String())
-		case "targetLanguage":
-			out.TargetLanguage = string(in.String())
-		case "status":
-			out.Status = string(in.String())
-		case "wordsCount":
-			out.WordsCount = uint64(in.Uint64())
-		case "statusModificationDate":
-			if data := in.Raw(); in.Ok() {
-				in.AddError((out.StatusModificationDate).UnmarshalJSON(data))
-			}
-		case "pretranslateCompleted":
-			out.PretranslateCompleted = bool(in.Bool())
-		case "workflowStages":
-			if in.IsNull() {
-				in.Skip()
-				out.WorkflowStages = nil
-			} else {
-				in.Delim('[')
-				if out.WorkflowStages == nil {
-					if !in.IsDelim(']') {
-						out.WorkflowStages = make([]DocumentWorkflowStage, 0, 1)
-					} else {
-						out.WorkflowStages = []DocumentWorkflowStage{}
-					}
-				} else {
-					out.WorkflowStages = (out.WorkflowStages)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v52 DocumentWorkflowStage
-					(v52).UnmarshalEasyJSON(in)
-					out.WorkflowStages = append(out.WorkflowStages, v52)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "externalId":
-			out.ExternalID = string(in.String())
-		case "metaInfo":
-			out.MetaInfo = string(in.String())
-		case "placeholdersAreEnabled":
-			out.PlaceholdersAreEnabled = bool(in.Bool())
-		default:
-			in.SkipRecursive()
-		}
-		in.WantComma()
-	}
-	in.Delim('}')
-	if isTopLevel {
-		in.Consumed()
-	}
-}
-func easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient12(out *jwriter.Writer, in Document) {
-	out.RawByte('{')
-	first := true
-	_ = first
-	{
-		const prefix string = ",\"id\":"
-		out.RawString(prefix[1:])
-		out.String(string(in.ID))
-	}
-	{
-		const prefix string = ",\"name\":"
-		out.RawString(prefix)
-		out.String(string(in.Name))
-	}
-	{
-		const prefix string = ",\"creationDate\":"
-		out.RawString(prefix)
-		out.Raw((in.CreationDate).MarshalJSON())
-	}
-	{
-		const prefix string = ",\"deadline\":"
-		out.RawString(prefix)
-		out.Raw((in.Deadline).MarshalJSON())
-	}
-	{
-		const prefix string = ",\"sourceLanguage\":"
-		out.RawString(prefix)
-		out.String(string(in.SourceLanguage))
-	}
-	{
-		const prefix string = ",\"documentDisassemblingStatus\":"
-		out.RawString(prefix)
-		out.String(string(in.DisassemblingStatus))
-	}
-	{
-		const prefix string = ",\"targetLanguage\":"
-		out.RawString(prefix)
-		out.String(string(in.TargetLanguage))
-	}
-	{
-		const prefix string = ",\"status\":"
-		out.RawString(prefix)
-		out.String(string(in.Status))
-	}
-	{
-		const prefix string = ",\"wordsCount\":"
-		out.RawString(prefix)
-		out.Uint64(uint64(in.WordsCount))
-	}
-	{
-		const prefix string = ",\"statusModificationDate\":"
-		out.RawString(prefix)
-		out.Raw((in.StatusModificationDate).MarshalJSON())
-	}
-	{
-		const prefix string = ",\"pretranslateCompleted\":"
-		out.RawString(prefix)
-		out.Bool(bool(in.PretranslateCompleted))
-	}
-	{
-		const prefix string = ",\"workflowStages\":"
-		out.RawString(prefix)
-		if in.WorkflowStages == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-			out.RawString("null")
-		} else {
-			out.RawByte('[')
-			for v53, v54 := range in.WorkflowStages {
-				if v53 > 0 {
-					out.RawByte(',')
-				}
-				(v54).MarshalEasyJSON(out)
-			}
-			out.RawByte(']')
-		}
-	}
-	{
-		const prefix string = ",\"externalId\":"
-		out.RawString(prefix)
-		out.String(string(in.ExternalID))
-	}
-	{
-		const prefix string = ",\"metaInfo\":"
-		out.RawString(prefix)
-		out.String(string(in.MetaInfo))
-	}
-	{
-		const prefix string = ",\"placeholdersAreEnabled\":"
-		out.RawString(prefix)
-		out.Bool(bool(in.PlaceholdersAreEnabled))
-	}
-	out.RawByte('}')
-}
-
-// MarshalJSON supports json.Marshaler interface
-func (v Document) MarshalJSON() ([]byte, error) {
-	w := jwriter.Writer{}
-	easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient12(&w, v)
-	return w.Buffer.BuildBytes(), w.Error
-}
-
-// MarshalEasyJSON supports easyjson.Marshaler interface
-func (v Document) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient12(w, v)
-}
-
-// UnmarshalJSON supports json.Unmarshaler interface
-func (v *Document) UnmarshalJSON(data []byte) error {
-	r := jlexer.Lexer{Data: data}
-	easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient12(&r, v)
-	return r.Error()
-}
-
-// UnmarshalEasyJSON supports easyjson.Unmarshaler interface
-func (v *Document) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient12(l, v)
-}
-func easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient13(in *jlexer.Lexer, out *Cost) {
+func easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient12(in *jlexer.Lexer, out *Cost) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -1933,7 +1805,7 @@ func easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient13(in *jlexer.Lexer
 		in.Consumed()
 	}
 }
-func easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient13(out *jwriter.Writer, in Cost) {
+func easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient12(out *jwriter.Writer, in Cost) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -1968,27 +1840,27 @@ func easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient13(out *jwriter.Wri
 // MarshalJSON supports json.Marshaler interface
 func (v Cost) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient13(&w, v)
+	easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient12(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v Cost) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient13(w, v)
+	easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient12(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *Cost) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient13(&r, v)
+	easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient12(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *Cost) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient13(l, v)
+	easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient12(l, v)
 }
-func easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient14(in *jlexer.Lexer, out *CompletedWorkStatisticsList) {
+func easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient13(in *jlexer.Lexer, out *CompletedWorkStatisticsList) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		in.Skip()
@@ -2016,7 +1888,7 @@ func easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient14(in *jlexer.Lexer
 		in.Consumed()
 	}
 }
-func easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient14(out *jwriter.Writer, in CompletedWorkStatisticsList) {
+func easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient13(out *jwriter.Writer, in CompletedWorkStatisticsList) {
 	if in == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 		out.RawString("null")
 	} else {
@@ -2034,27 +1906,27 @@ func easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient14(out *jwriter.Wri
 // MarshalJSON supports json.Marshaler interface
 func (v CompletedWorkStatisticsList) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient14(&w, v)
+	easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient13(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v CompletedWorkStatisticsList) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient14(w, v)
+	easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient13(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *CompletedWorkStatisticsList) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient14(&r, v)
+	easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient13(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *CompletedWorkStatisticsList) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient14(l, v)
+	easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient13(l, v)
 }
-func easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient15(in *jlexer.Lexer, out *CompletedWorkStatistics) {
+func easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient14(in *jlexer.Lexer, out *CompletedWorkStatistics) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -2137,7 +2009,7 @@ func easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient15(in *jlexer.Lexer
 		in.Consumed()
 	}
 }
-func easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient15(out *jwriter.Writer, in CompletedWorkStatistics) {
+func easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient14(out *jwriter.Writer, in CompletedWorkStatistics) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -2199,25 +2071,25 @@ func easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient15(out *jwriter.Wri
 // MarshalJSON supports json.Marshaler interface
 func (v CompletedWorkStatistics) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient15(&w, v)
+	easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient14(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v CompletedWorkStatistics) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient15(w, v)
+	easyjson7b166cadEncodeGithubComMarkus621GoSmartcatClient14(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *CompletedWorkStatistics) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient15(&r, v)
+	easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient14(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *CompletedWorkStatistics) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient15(l, v)
+	easyjson7b166cadDecodeGithubComMarkus621GoSmartcatClient14(l, v)
 }
 func easyjson7b166cadDecode1(in *jlexer.Lexer, out *struct {
 	ID           string `json:"id"`

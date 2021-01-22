@@ -15,7 +15,6 @@ const (
 	uriProjectRestore             = "/api/integration/v1/project/restore"
 	uriProjectComplete            = "/api/integration/v1/project/complete"
 	uriProjectCreate              = "/api/integration/v1/project/create"
-	uriProjectDocument            = "/api/integration/v1/project/document"
 	uriProjectStatistics          = "/api/integration/v2/project/%s/statistics"
 	uriProjectCWStatistics        = "/api/integration/v2/project/%s/completedWorkStatistics"
 	uriProjectTranslationMemories = "/api/integration/v2/project/%s/translationmemories"
@@ -51,6 +50,20 @@ type (
 		Managers               []string        `json:"managers"`
 		Number                 []string        `json:"number"`
 	}
+	//NewProject model
+	NewProject struct {
+		Name                     string   `json:"name"`
+		Description              string   `json:"description"`
+		SourceLanguage           string   `json:"sourceLanguage"`
+		TargetLanguages          []string `json:"targetLanguages"`
+		AssignToVendor           bool     `json:"assignToVendor"`
+		UseMT                    bool     `json:"useMT"`
+		Pretranslate             bool     `json:"pretranslate"`
+		UseTranslationMemory     bool     `json:"useTranslationMemory"`
+		AutoPropagateRepetitions bool     `json:"autoPropagateRepetitions"`
+		WorkflowStages           []string `json:"workflowStages"`
+		IsForTesting             bool     `json:"isForTesting"`
+	}
 	//Cost model
 	Cost struct {
 		Value           float64 `json:"value"`
@@ -68,16 +81,8 @@ type (
 	}
 	//WorkflowStage model
 	WorkflowStage struct {
-		Progress  uint   `json:"progress"`
-		StageType string `json:"stageType"`
-	}
-	//DocumentWorkflowStage model
-	DocumentWorkflowStage struct {
-		Progress             uint        `json:"progress"`
-		WordsTranslated      uint64      `json:"wordsTranslated"`
-		UnassignedWordsCount uint64      `json:"unassignedWordsCount"`
-		Status               string      `json:"status"`
-		Executives           []Executive `json:"executives"`
+		Progress  float64 `json:"progress"`
+		StageType string  `json:"stageType"`
 	}
 	//Executive model
 	Executive struct {
@@ -85,24 +90,6 @@ type (
 		AssignedWordsCount uint64 `json:"assignedWordsCount"`
 		Progress           uint   `json:"progress"`
 		SupplierType       string `json:"supplierType"`
-	}
-	//Document model
-	Document struct {
-		ID                     string                  `json:"id"`
-		Name                   string                  `json:"name"`
-		CreationDate           time.Time               `json:"creationDate"`
-		Deadline               time.Time               `json:"deadline"`
-		SourceLanguage         string                  `json:"sourceLanguage"`
-		DisassemblingStatus    string                  `json:"documentDisassemblingStatus"`
-		TargetLanguage         string                  `json:"targetLanguage"`
-		Status                 string                  `json:"status"`
-		WordsCount             uint64                  `json:"wordsCount"`
-		StatusModificationDate time.Time               `json:"statusModificationDate"`
-		PretranslateCompleted  bool                    `json:"pretranslateCompleted"`
-		WorkflowStages         []DocumentWorkflowStage `json:"workflowStages"`
-		ExternalID             string                  `json:"externalId"`
-		MetaInfo               string                  `json:"metaInfo"`
-		PlaceholdersAreEnabled bool                    `json:"placeholdersAreEnabled"`
 	}
 	//PatchProject model
 	PatchProject struct {
@@ -162,68 +149,78 @@ type (
 	}
 )
 
+//CreateProject Create new project
+func (c *Client) CreateProject(in NewProject) (out Project, err error) {
+	form := NewForm()
+	if err = form.AddJSON("model", &in); err != nil {
+		return
+	}
+	_, err = c.form(http.MethodPost, uriProjectCreate, form, &out)
+	return
+}
+
 //DelProject Delete the project
-func (v *Client) DelProject(id string) (err error) {
-	_, err = v.call(http.MethodDelete, fmt.Sprintf(uriProject, id), nil, nil)
+func (c *Client) DelProject(id string) (err error) {
+	_, err = c.json(http.MethodDelete, fmt.Sprintf(uriProject, id), nil, nil)
 	return
 }
 
 //GetProject Receive the project model
-func (v *Client) GetProject(id string) (out Project, err error) {
-	_, err = v.call(http.MethodGet, fmt.Sprintf(uriProject, id), nil, &out)
+func (c *Client) GetProject(id string) (out Project, err error) {
+	_, err = c.json(http.MethodGet, fmt.Sprintf(uriProject, id), nil, &out)
 	return
 }
 
 //SetProject Change the project model
-func (v *Client) SetProject(id string, in PatchProject) (out Project, err error) {
-	_, err = v.call(http.MethodPut, fmt.Sprintf(uriProject, id), &in, &out)
+func (c *Client) SetProject(id string, in PatchProject) (out Project, err error) {
+	_, err = c.json(http.MethodPut, fmt.Sprintf(uriProject, id), &in, &out)
 	return
 }
 
 //CancelProject Cancel the project
-func (v *Client) CancelProject(id string) (err error) {
-	_, err = v.call(http.MethodPost, uriProjectCancel+"?projectId="+id, nil, nil)
+func (c *Client) CancelProject(id string) (err error) {
+	_, err = c.json(http.MethodPost, uriProjectCancel+"?projectId="+id, nil, nil)
 	return
 }
 
 //RestoreProject Restore the project
-func (v *Client) RestoreProject(id string) (err error) {
-	_, err = v.call(http.MethodPost, uriProjectRestore+"?projectId="+id, nil, nil)
+func (c *Client) RestoreProject(id string) (err error) {
+	_, err = c.json(http.MethodPost, uriProjectRestore+"?projectId="+id, nil, nil)
 	return
 }
 
 //CompleteProject Complete the project
-func (v *Client) CompleteProject(id string) (err error) {
-	_, err = v.call(http.MethodPost, uriProjectComplete+"?projectId="+id, nil, nil)
+func (c *Client) CompleteProject(id string) (err error) {
+	_, err = c.json(http.MethodPost, uriProjectComplete+"?projectId="+id, nil, nil)
 	return
 }
 
 //ListProject List all projects
-func (v *Client) ListProject() (out ProjectsList, err error) {
-	_, err = v.call(http.MethodGet, uriProjectList, nil, &out)
+func (c *Client) ListProject() (out ProjectsList, err error) {
+	_, err = c.json(http.MethodGet, uriProjectList, nil, &out)
 	return
 }
 
 //GetProjectStatistics Receive statistics
-func (v *Client) GetProjectStatistics(id string) (out StatisticsList, err error) {
-	_, err = v.call(http.MethodGet, uriProjectStatistics, nil, &out)
+func (c *Client) GetProjectStatistics(id string) (out StatisticsList, err error) {
+	_, err = c.json(http.MethodGet, uriProjectStatistics, nil, &out)
 	return
 }
 
 //GetProjectCompletedWorkStatistics Receiving statistics for the completed parts of the project
-func (v *Client) GetProjectCompletedWorkStatistics(id string) (out CompletedWorkStatisticsList, err error) {
-	_, err = v.call(http.MethodGet, uriProjectCWStatistics, nil, &out)
+func (c *Client) GetProjectCompletedWorkStatistics(id string) (out CompletedWorkStatisticsList, err error) {
+	_, err = c.json(http.MethodGet, uriProjectCWStatistics, nil, &out)
 	return
 }
 
 //GetProjectTranslationMemories Receiving a list of the TMs plugged into the project
-func (v *Client) GetProjectTranslationMemories(id string) (out TranslationMemories, err error) {
-	_, err = v.call(http.MethodGet, uriProjectTranslationMemories, nil, &out)
+func (c *Client) GetProjectTranslationMemories(id string) (out TranslationMemories, err error) {
+	_, err = c.json(http.MethodGet, uriProjectTranslationMemories, nil, &out)
 	return
 }
 
 //SetProjectTranslationMemories Receiving a list of the TMs plugged into the project
-func (v *Client) SetProjectTranslationMemories(id string, in TranslationMemories) (err error) {
-	_, err = v.call(http.MethodGet, uriProjectTranslationMemories, &in, nil)
+func (c *Client) SetProjectTranslationMemories(id string, in TranslationMemories) (err error) {
+	_, err = c.json(http.MethodGet, uriProjectTranslationMemories, &in, nil)
 	return
 }
